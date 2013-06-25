@@ -1,0 +1,5 @@
+#! /bin/sh
+
+# Values for 1280x720 on the Lilliput 10"
+
+intel_panel_fitter -p A -x 1190 -y 680
