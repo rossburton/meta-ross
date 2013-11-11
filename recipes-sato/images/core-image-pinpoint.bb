@@ -14,7 +14,7 @@ CORE_IMAGE_BASE_INSTALL += "\
   weston weston-init weston-examples \
   gtk+3-demo \
   gstreamer1.0 gstreamer1.0-plugins-base-meta gstreamer1.0-plugins-good-meta gstreamer1.0-plugins-bad-meta gstreamer1.0-libav gstreamer-vaapi \
-  libgles2-mesa \
+  libgles2-mesa libgles2-mesa-dev \
   pinpoint"
 
 add_user_session () {
