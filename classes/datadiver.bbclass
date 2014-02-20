@@ -4,6 +4,9 @@ python do_datadiver() {
     import os; os.environ['DISPLAY'] = d.getVar("BB_ORIGENV", False).getVar("DISPLAY", True)
     from gi.repository import Gtk, Pango
 
+    # TODO: when this is wrapped in my GTK+, but done properly
+    #GLib.log_set_default_handler(lambda domain, level, message, data: bb.plain(message))
+
     class DataDiverWindow(Gtk.Window):
         def __init__(self):
             Gtk.Window.__init__(self, title="Data Diver")
