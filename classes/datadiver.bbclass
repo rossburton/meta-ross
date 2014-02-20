@@ -2,7 +2,7 @@ addtask datadiver
 do_datadiver[nostamp] = "1"
 python do_datadiver() {
     import os; os.environ['DISPLAY'] = d.getVar("BB_ORIGENV", False).getVar("DISPLAY", True)
-    from gi.repository import Gtk
+    from gi.repository import Gtk, Pango
 
     class DataDiverWindow(Gtk.Window):
         def __init__(self):
@@ -26,6 +26,7 @@ python do_datadiver() {
             self.keylist = Gtk.TreeView(model=self.keystore)
             self.keylist.set_enable_search(True)
             self.keylist.set_search_column(0)
+            self.keylist.set_headers_visible(False)
             def key_search(model, column, key, treeiter, search_data):
               if key.lower() in model[treeiter][0].lower():
                   return 0
@@ -39,6 +40,7 @@ python do_datadiver() {
             self.keylist.show()
             scrolled.add(self.keylist)
 
+
             frame = Gtk.Frame(shadow_type=Gtk.ShadowType.IN)
             frame.show()
             pane.add2(frame)
@@ -48,12 +50,20 @@ python do_datadiver() {
             frame.add(box)
 
             self.label = Gtk.Label()
+            self.label.set_alignment(0.0, 0.0)
             self.label.show()
-            box.add(self.label)
+            box.pack_start(self.label, False, False, 0)
 
-            self.value_label = Gtk.Label()
-            self.value_label.show()
-            box.add(self.value_label)
+            scrolled = Gtk.ScrolledWindow(shadow_type=Gtk.ShadowType.IN)
+            scrolled.show()
+            box.pack_start(scrolled, True, True, 0)
+
+            self.value_buffer = Gtk.TextBuffer()
+            valueview = Gtk.TextView(buffer=self.value_buffer)
+            valueview.set_editable(False)
+            valueview.override_font(Pango.FontDescription.from_string("monospace"))
+            valueview.show()
+            scrolled.add(valueview)
 
             self.value_expand_check = Gtk.CheckButton(label="Expand variables")
             self.value_expand_check.show()
@@ -64,8 +74,7 @@ python do_datadiver() {
             model, treeiter = self.keylist.get_selection().get_selected()
             if treeiter:
                 varname = model[treeiter][0]
-                s = "<b>Value</b>\n%s" % d.getVar(varname, check.get_active())
-                self.value_label.set_markup(s)
+                self.value_buffer.set_text(d.getVar(varname, check.get_active()))
 
         def on_keylist_changed(self, selection):
             model, treeiter = selection.get_selected()
@@ -89,7 +98,7 @@ python do_datadiver() {
                 self.on_expand_toggled(self.value_expand_check)
             else:
                 self.label.set_text("")
-                self.value_label.set_text("")
+                self.value_buffer.set_text("")
 
     win = DataDiverWindow()
     win.connect("delete-event", Gtk.main_quit)
