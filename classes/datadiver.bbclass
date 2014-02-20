@@ -1,7 +1,7 @@
 addtask datadiver
 do_datadiver[nostamp] = "1"
 python do_datadiver() {
-    import os; os.environ['DISPLAY'] = 'localhost:14.0'
+    import os; os.environ['DISPLAY'] = d.getVar("BB_ORIGENV", False).getVar("DISPLAY", True)
     from gi.repository import Gtk
 
     class DataDiverWindow(Gtk.Window):
