@@ -23,13 +23,19 @@ python do_datadiver() {
             scrolled.show()
             frame.add(scrolled)
 
-            self.keylist = Gtk.TreeView(self.keystore)
+            self.keylist = Gtk.TreeView(model=self.keystore)
+            self.keylist.set_enable_search(True)
+            self.keylist.set_search_column(0)
+            def key_search(model, column, key, treeiter, search_data):
+              if key.lower() in model[treeiter][0].lower():
+                  return 0
+              return -1
+            self.keylist.set_search_equal_func(key_search, None)
             column = Gtk.TreeViewColumn("Title", Gtk.CellRendererText(), text=0)
             # TODO: show icons for the flags
             self.keylist.append_column(column)
             self.keylist.get_selection().connect("changed", self.on_keylist_changed)
-            # TODO enable inline case-agnostic substring search in a search bar,
-            # with options also in the bar to filter on flags
+            # TODO: add a search bar with options also in the bar to filter on flags
             self.keylist.show()
             scrolled.add(self.keylist)
 
