@@ -77,7 +77,7 @@ python do_datadiver() {
             model, treeiter = self.keylist.get_selection().get_selected()
             if treeiter:
                 varname = model[treeiter][0]
-                self.value_buffer.set_text(d.getVar(varname, check.get_active()))
+                self.value_buffer.set_text(d.getVar(varname, check.get_active()) or "")
 
         def on_keylist_changed(self, selection):
             model, treeiter = selection.get_selected()
