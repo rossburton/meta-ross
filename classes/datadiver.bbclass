@@ -90,7 +90,9 @@ python do_datadiver() {
                     s += "<i>%s</i>\n" % doc
 
                 s += "<b>Flags</b>\n"
-                for flagname in d.getVarFlags(varname):
+                # If there are no flags getVarFlags will return None instead of
+                # an empty list.
+                for flagname in d.getVarFlags(varname) or ():
                   if flagname in ('doc',):
                       continue
                   flagvalue = d.getVarFlag(varname, flagname)
