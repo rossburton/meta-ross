@@ -11,7 +11,8 @@ python do_datadiver() {
         def __init__(self):
             Gtk.Window.__init__(self, title="Data Diver")
             # TODO: columns for each of the major flags (task, func, python)
-            self.keystore = Gtk.ListStore(str)
+            # Variable name, is task, is func
+            self.keystore = Gtk.ListStore(str, bool, bool)
             self.keystore.set_sort_column_id(0, Gtk.SortType.ASCENDING)
 
             pane = Gtk.Paned(orientation=Gtk.Orientation.HORIZONTAL)
@@ -109,9 +110,8 @@ python do_datadiver() {
     win.connect("delete-event", Gtk.main_quit)
 
     for k in d.keys():
-        # TODO: Just tasks for now, all of them later
-        if d.getVarFlag(k, "task"):
-            win.keystore.append([k,])
+        flags = d.getVarFlags(k) or ()
+        win.keystore.append([k, "task" in flags, "func" in flags])
 
     win.show()
     Gtk.main()
