@@ -14,6 +14,13 @@ python do_datadiver() {
             # Variable name, is task, is func
             self.keystore = Gtk.ListStore(str, bool, bool)
             self.keystore.set_sort_column_id(0, Gtk.SortType.ASCENDING)
+            self.filter = Gtk.TreeModelFilter(child_model=self.keystore)
+            self.filter_column = None
+            def filter_func(model, treeiter, nothing):
+                if self.filter_column:
+                    return model[treeiter][self.filter_column]
+                return True
+            self.filter.set_visible_func(filter_func)
 
             pane = Gtk.Paned(orientation=Gtk.Orientation.HORIZONTAL)
             pane.show()
@@ -23,11 +30,29 @@ python do_datadiver() {
             frame.show()
             pane.add1(frame)
 
+            box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+            box.show()
+            frame.add(box)
+
+            bbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+            bbox.show()
+            box.pack_start(bbox, False, False, 0)
+
+            button = Gtk.RadioButton.new_with_label_from_widget(None, "All")
+            button.connect("toggled", self.on_filter, None)
+            button.show()
+            bbox.add(button)
+
+            button = Gtk.RadioButton.new_with_label_from_widget(button, "Tasks")
+            button.connect("toggled", self.on_filter, 1)
+            button.show()
+            bbox.add(button)
+
             scrolled = Gtk.ScrolledWindow()
             scrolled.show()
-            frame.add(scrolled)
+            box.pack_start(scrolled, True, True, 0)
 
-            self.keylist = Gtk.TreeView(model=self.keystore)
+            self.keylist = Gtk.TreeView(model=self.filter)
             self.keylist.set_enable_search(True)
             self.keylist.set_search_column(0)
             self.keylist.set_headers_visible(False)
@@ -39,7 +64,7 @@ python do_datadiver() {
             column = Gtk.TreeViewColumn("Title", Gtk.CellRendererText(), text=0)
             # TODO: show icons for the flags
             self.keylist.append_column(column)
-            self.keylist.get_selection().connect("changed", self.on_keylist_changed)
+            self.changed_id = self.keylist.get_selection().connect("changed", self.on_keylist_changed)
             # TODO: add a search bar with options also in the bar to filter on flags
             self.keylist.show()
             scrolled.add(self.keylist)
@@ -79,6 +104,19 @@ python do_datadiver() {
             if treeiter:
                 varname = model[treeiter][0]
                 self.value_buffer.set_text(d.getVar(varname, check.get_active()) or "")
+
+        def on_filter(self, button, column):
+            if not button.get_active():
+                return
+
+            self.filter_column = column
+
+            # TODO: use with syntax when we have newer gobject
+            selection = self.keylist.get_selection()
+            selection.handler_block(self.changed_id)
+            self.filter.refilter()
+            selection.handler_unblock(self.changed_id)
+            self.on_keylist_changed(selection)
 
         def on_keylist_changed(self, selection):
             model, treeiter = selection.get_selected()
