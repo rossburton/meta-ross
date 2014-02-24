@@ -86,18 +86,18 @@ python do_datadiver() {
                 varname = model[treeiter][0]
                 s = "<big><b>%s</b></big>\n" % varname
 
-                doc = d.getVarFlag(varname, "doc")
-                if doc:
-                    s += "<i>%s</i>\n" % doc
+                flags = d.getVarFlags(varname) or {}
+
+                if "doc" in flags:
+                    s += "<i>%s</i>\n" % flags["doc"]
 
                 s += "<b>Flags</b>\n"
                 # If there are no flags getVarFlags will return None instead of
                 # an empty list.
-                for flagname in d.getVarFlags(varname) or ():
+                for flagname in flags:
                   if flagname in ('doc',):
                       continue
-                  flagvalue = d.getVarFlag(varname, flagname)
-                  s += "- %s=%s\n" % (flagname, flagvalue)
+                  s += "- %s=%s\n" % (flagname, flags[flagname])
                 self.label.set_markup(s)
 
                 self.value_expand_check.set_active(False)
