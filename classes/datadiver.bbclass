@@ -100,7 +100,6 @@ python do_datadiver() {
                   s += "- %s=%s\n" % (flagname, flags[flagname])
                 self.label.set_markup(s)
 
-                self.value_expand_check.set_active(False)
                 self.on_expand_toggled(self.value_expand_check)
             else:
                 self.label.set_text("")
