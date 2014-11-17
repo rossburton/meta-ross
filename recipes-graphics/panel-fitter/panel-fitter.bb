@@ -2,6 +2,8 @@ SUMMARY = "Set panel size"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384361b4de20420"
 
+COMPATIBLE_HOST = "(i.86|x86_64).*-linux"
+
 SRC_URI = "file://80panel-fitter"
 
 RDEPENDS_${PN} = "intel-gpu-tools"
