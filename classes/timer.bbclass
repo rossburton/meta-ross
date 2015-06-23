@@ -1,4 +1,4 @@
-python run_timer () {
+python timer_handler () {
     import time, datetime, bb.event
 
     start_time = None
@@ -13,6 +13,9 @@ python run_timer () {
         duration = end_time - start_time
 
         bb.note("Build took %s minutes" % (duration))
+
+    return
 }
 
-addhandler run_timer
+addhandler timer_handler
+timer_handler[eventmask] = "bb.event.BuildStarted bb.event.BuildCompleted"
