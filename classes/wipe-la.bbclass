@@ -1,5 +1,9 @@
-do_wipe_libtool () {
-	find ${D} -type f -name "*.la" -exec rm \{} \;
+WIPE_LA ?= "1"
+
+do_wipe_libtool() {
+	if [ ${WIPE_LA} != 0 ]; then
+		find "${D}" -name "*.la" -delete
+	fi
 }
 
-addtask wipe_libtool after do_install before do_populate_sysroot do_package
+do_install[postfuncs] += "do_wipe_libtool"
