@@ -11,7 +11,6 @@ S = "${WORKDIR}/git"
 EXTRA_OEMAKE = 'bin_dir=${bindir} lib_dir=${libdir} \
                 libexec_dir=${libexecdir}/authbind share_dir=${datadir} \
                 etc_dir=${sysconfdir}/authbind \
-                INSTALL_PROGRAM="install -o root -g root -m 755" \
                 LD="${LD} --hash-style=${LINKER_HASH_STYLE}"'
 
 
