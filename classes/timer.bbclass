@@ -8,7 +8,7 @@ python timer_handler () {
         e.data.setVar("_time_starttime", t)
 
     elif isinstance(e, bb.event.BuildCompleted):
-        start_time = e.data.getVar("_time_starttime")
+        start_time = e.data.getVar("_time_starttime", False)
         end_time = datetime.datetime.fromtimestamp(int(time.time()))
         duration = end_time - start_time
 
