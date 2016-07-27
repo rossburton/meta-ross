@@ -5,6 +5,19 @@ python do_throwerror() {
     raise RuntimeError("argh!")
 }
 
+addtask spawnerror
+do_spawnerror[nostamp] = "1"
+python do_spawnerror() {
+    import subprocess
+    subprocess.check_output("echo about to fail; echo here we go; false", shell=True, stderr=subprocess.STDOUT)
+}
+
+addtask spawnerrorbinary
+do_spawnerrorbinary[nostamp] = "1"
+python do_spawnerrorbinary() {
+    import subprocess
+    subprocess.check_output("head -c 10 /bin/bash; false", shell=True, stderr=subprocess.STDOUT)
+}
 
 addtask emiterror
 do_emiterror[nostamp] = "1"
@@ -16,7 +29,6 @@ python do_emiterror() {
 
 addtask shellerror
 do_shellerror() {
-    set -x
     bbwarn This is a warning
     bberror This is an error
     bbfatal This is fatal
