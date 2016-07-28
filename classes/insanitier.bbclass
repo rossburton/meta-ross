@@ -13,7 +13,7 @@ python do_qa_more_configure() {
 
 do_unpack[postfuncs] += "do_qa_more_unpack"
 python do_qa_more_unpack() {
-    do_check_debian_src(d)
+    bb.build.exec_func("do_check_debian_src", d)
 }
 
 WARN_QA_append = " redundant-intltool debian-mirror"
