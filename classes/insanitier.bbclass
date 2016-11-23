@@ -1,16 +1,38 @@
-WARN_QA_append = " redundant-intltool"
+# TODO Rename
+WARN_QA_append = " configure-depends"
 
-do_configure[postfuncs] += "do_qa_more_configure"
-python do_qa_more_configure() {
-    import subprocess
+addtask configure_qa_more after do_patch before do_build
+python do_configure_qa_more() {
+    if not bb.data.inherits_class("autotools", d):
+        return
 
-    if bb.data.inherits_class("autotools", d):
-        if "intltool-native" in d.getVar("DEPENDS", True):
-            # TODO or configure.in
-            ret = subprocess.call(['grep', '-q', "[AI][CT]_PROG_INTLTOOL", os.path.join(d.getVar("AUTOTOOLS_SCRIPT_PATH", True), "configure.ac")])
-            if ret == 1:
-                error_msg = "%s depends on intltool but doesn't use it" % d.getVar("PN", True)
-                package_qa_handle_error("redundant-intltool", error_msg, d)
+    def check_configure(*matches):
+        import subprocess
+        def expressions():
+            for m in matches:
+                yield "-e"
+                yield m
+        cmd = ['grep', '-q']
+        cmd.extend(expressions())
+        cmd.append(os.path.join(d.getVar("AUTOTOOLS_SCRIPT_PATH", True), "configure.ac"))
+        cmd.append(os.path.join(d.getVar("AUTOTOOLS_SCRIPT_PATH", True), "configure.in"))
+        return subprocess.call(cmd) == 0
+
+    depends = d.getVar("DEPENDS", True).split()
+
+    if "intltool-native" in depends:
+        if not check_configure("[AI][CT]_PROG_INTLTOOL"):
+            error_msg = "%s depends on intltool but doesn't use it" % d.getVar("PN", True)
+            package_qa_handle_error("configure-depends", error_msg, d)
+
+    uses_gnomecommon = check_configure("GNOME_COMPILE_WARNINGS", "GNOME_CXX_WARNINGS", "GNOME_MAINTAINER_MODE_DEFINES", "GNOME_CODE_COVERAGE")
+    has_gnomecommon = "gnome-common" in depends or "gnome-common-native" in depends
+    if has_gnomecommon and not uses_gnomecommon:
+        error_msg = "%s depends on gnome-common but doesn't use it" % d.getVar("PN", True)
+        package_qa_handle_error("configure-depends", error_msg, d)
+    if uses_gnomecommon and not has_gnomecommon:
+        error_msg = "%s needs to DEPEND on gnome-common" % d.getVar("PN", True)
+        package_qa_handle_error("configure-depends", error_msg, d)
 }
 
 addtask srcuri_qa before do_build
