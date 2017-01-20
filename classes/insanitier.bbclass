@@ -1,5 +1,5 @@
 # TODO Rename
-WARN_QA_append = " configure-depends"
+WARN_QA_append = " configure-depends libtool-wrapper"
 
 addtask configure_qa_more after do_patch before do_build
 python do_configure_qa_more() {
@@ -64,3 +64,23 @@ def package_qa_check_stale_pyc(path, pn, d, elf, messages):
     if pycpath.stat().st_mtime < pypath.stat().st_mtime:
         # pn
         package_qa_add_message(messages, "stale-pyc", "package %s contains stale pyc %s" % (pn, package_qa_clean_path(path, d)))
+
+
+QAPATHTEST[libtool-wrapper] = "package_qa_check_libtool_wrapper"
+def package_qa_check_libtool_wrapper(path, name, d, elf, messages):
+    """
+    Warn if there appears to be libtool wrapper scripts installed
+    """
+    if elf:
+        return
+
+    import errno, stat, subprocess
+
+    try:
+        statinfo = os.stat(path)
+        if bool(statinfo.st_mode & stat.S_IXUSR):
+            if subprocess.call("grep -q -F 'libtool wrapper (GNU libtool)' %s" % path, shell=True) == 0:
+                package_qa_handle_error("libtool-wrapper", "%s looks like a libtool wrapper script" % path, d)
+    except OSError as exc:
+        if exc.errno != errno.ENOENT:
+            raise
