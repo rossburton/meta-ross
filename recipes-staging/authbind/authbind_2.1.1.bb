@@ -34,3 +34,5 @@ do_install () {
 	install -D authbind.1 ${D}${mandir}/man1/authbind.1
 	install -D authbind-helper.8 ${D}${mandir}/man8/authbind-helper.8
 }
+
+EXCLUDE_FROM_WORLD = "1"
