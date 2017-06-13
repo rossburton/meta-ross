@@ -137,7 +137,7 @@ python do_datadiver() {
                 for flagname in flags:
                   if flagname in ('doc',):
                       continue
-                  s += "- %s=%s\n" % (flagname, flags[flagname])
+                  s += "- %s=%s\n" % (flagname, d.expand(flags[flagname]))
                 self.label.set_markup(s)
 
                 self.on_expand_toggled(self.value_expand_check)
