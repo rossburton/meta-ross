@@ -1,5 +1,7 @@
 addtask datadiver
 do_datadiver[nostamp] = "1"
+do_datadiver[vardepsexclude] = "BB_ORIGENV DISPLAY"
+
 python do_datadiver() {
     import os; os.environ['DISPLAY'] = d.getVar("BB_ORIGENV", False).getVar("DISPLAY", True)
     from gi.repository import Gtk, Pango
