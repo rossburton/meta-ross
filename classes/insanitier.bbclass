@@ -1,4 +1,4 @@
-WARN_QA_append = " configure-depends libtool-wrapper"
+WARN_QA_append = " configure-depends libtool-wrapper many-debug"
 
 do_configure[postfuncs] += "do_qa_configure_more"
 python do_qa_configure_more() {
@@ -76,3 +76,22 @@ def package_qa_check_libtool_wrapper(path, name, d, elf, messages):
     except OSError as exc:
         if exc.errno != errno.ENOENT:
             raise
+
+QARECIPETEST[many-debug] = "package_qa_check_many_debug"
+def package_qa_check_many_debug(pn, d, messages):
+    # If this is set then multiple -dbg packages are acceptable
+    if d.getVar("NOAUTOPACKAGEDEBUG"):
+        return
+
+    # Package groups have a -dbg per package, so ignore those
+    if bb.data.inherits_class("packagegroup", d):
+        return
+
+    seen = False
+    for pkg in d.getVar("PACKAGES").split():
+        if pkg.endswith("-dbg"):
+            if seen:
+                package_qa_handle_error("many-debug", "%s: has more than one -dbg package" % pn, d)
+                return False
+            seen = True
+    return True
