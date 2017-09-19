@@ -1,13 +1,7 @@
-WARN_QA_append = " configure-depends libtool-wrapper many-debug"
+WARN_QA_append = " configure-depends libtool-wrapper many-debug src-uri-bad"
 
 do_configure[postfuncs] += "do_qa_configure_more"
 python do_qa_configure_more() {
-    srcuri = d.getVar("SRC_URI", False)
-    if "${DEBIAN_MIRROR}" in srcuri:
-        bb.warn("QA Issue: SRC_URI uses DEBIAN_MIRROR")
-    if "${PN}" in srcuri:
-        bb.warn("QA Issue: SRC_URI uses PN not BPN")
-
     if bb.data.inherits_class("autotools", d):
         def check_configure(*matches):
             import subprocess
@@ -95,3 +89,15 @@ def package_qa_check_many_debug(pn, d, messages):
                 return False
             seen = True
     return True
+
+QARECIPETEST[src-uri-bad] = "package_qa_check_src_uri"
+def package_qa_check_src_uri(pn, d, messages):
+    import re
+
+    srcuri = d.getVar("SRC_URI", False)
+    if "${DEBIAN_MIRROR}" in srcuri:
+        package_qa_handle_error("src-uri-bad", "%s: SRC_URI uses DEBIAN_MIRROR not archive.debian.org" % pn, d)
+    if "${PN}" in srcuri:
+        package_qa_handle_error("src-uri-bad", "%s: SRC_URI uses PN not BPN" % pn, d)
+    if re.search(r"github\.com/.+/.+/archive/.*", srcuri):
+        package_qa_handle_error("src-uri-bad", "%s: SRC_URI uses unstable github archives" % pn, d)
