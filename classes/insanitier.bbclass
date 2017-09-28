@@ -9,7 +9,7 @@ python do_qa_configure_more() {
                 for m in matches:
                     yield "-e"
                     yield m
-            cmd = ['grep', '-q']
+            cmd = ['grep', '--quiet', '--no-messages']
             cmd.extend(expressions())
             cmd.append(os.path.join(d.getVar("AUTOTOOLS_SCRIPT_PATH", True), "configure.ac"))
             cmd.append(os.path.join(d.getVar("AUTOTOOLS_SCRIPT_PATH", True), "configure.in"))
