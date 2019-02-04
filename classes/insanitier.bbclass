@@ -101,3 +101,13 @@ def package_qa_check_src_uri(pn, d, messages):
         package_qa_handle_error("src-uri-bad", "%s: SRC_URI uses PN not BPN" % pn, d)
     if re.search(r"github\.com/.+/.+/archive/.*", srcuri):
         package_qa_handle_error("src-uri-bad", "%s: SRC_URI uses unstable github archives" % pn, d)
+
+QAPKGTEST[missing-pn] = "package_qa_missing_pn"
+def package_qa_missing_pn(pkg, d, messages):
+    if d.getVar("PN") == pkg:
+        pkg_dir = os.path.join(d.getVar('PKGDEST'), pkg)
+        contents = set(os.listdir(pkg_dir))
+        # strip out package database noise
+        contents -= {'CONTROL', 'DEBIAN'}
+        if len(contents) == 0 and d.getVar("ALLOW_EMPTY_" + pkg) != "1":
+            package_qa_handle_error("missing-pn", "%s: primary package not generated" % pkg, d)
