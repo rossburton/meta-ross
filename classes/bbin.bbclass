@@ -6,7 +6,8 @@ python process_bbin() {
     # BIG TODO:
     # If the template uses a variable that the recipe otherwise doesn't touch,
     # the hash generation doesn't know.
-
+    # anonpy to get the file from SRC_URI directly, using a dummy data object that tracks what names are __getitem__'d?
+    
     # string.Template expects d[foo] to work, but data_smart does
     # d.getVar(expand=False) in that case so use an adapter object.
     class DataExpander():
