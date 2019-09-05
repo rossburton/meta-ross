@@ -1,0 +1,8 @@
+PACKAGE_INSTALL = "gtk+3-doc"
+IMAGE_FEATURES = ""
+IMAGE_LINGUAS = ""
+IMAGE_FSTYPES = "tar.gz"
+
+LDCONFIGDEPEND = ""
+
+inherit image
