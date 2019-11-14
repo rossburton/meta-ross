@@ -19,3 +19,14 @@ python timer_handler () {
 
 addhandler timer_handler
 timer_handler[eventmask] = "bb.event.BuildStarted bb.event.BuildCompleted"
+
+def timer_start(d, name):
+    import time
+    now = time.time()
+    d.setVar("_timer_" + name, now)
+
+def timer_end(d, name):
+    import time
+    start = d.getVar("_timer_" + name, False)
+    now = time.time()
+    bb.warn("%s took %f" % (name, now - start))
