@@ -1,4 +1,4 @@
-WARN_QA:append = " configure-depends libtool-wrapper many-debug src-uri-bad"
+WARN_QA:append = " configure-depends libtool-wrapper many-debug src-uri-bad bsd-license"
 
 do_configure[postfuncs] += "do_qa_configure_more"
 python do_qa_configure_more() {
@@ -111,3 +111,10 @@ def package_qa_missing_pn(pkg, d, messages):
         contents -= {'CONTROL', 'DEBIAN'}
         if len(contents) == 0 and d.getVar("ALLOW_EMPTY_" + pkg) != "1":
             package_qa_handle_error("missing-pn", "%s: primary package not generated" % pkg, d)
+
+QARECIPETEST[bsd-license] = "package_qa_check_bsd_license"
+def package_qa_check_bsd_license(pn, d, messages):
+    licenses = d.getVar("LICENSE").split()
+    # TODO: also LICENSES_*
+    if "BSD" in licenses:
+        package_qa_handle_error("bsd-license", "%s: uses deprecated BSD license" % pn, d)
