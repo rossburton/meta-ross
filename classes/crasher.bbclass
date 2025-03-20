@@ -34,3 +34,11 @@ do_shellerror() {
     bbfatal This is fatal
     bbwarn This should not appear
 }
+
+addtask sleeper
+do_sleeper[nostamp] = "1"
+do_sleeper() {
+    bbwarn Sleeping for 5 minutes
+    sleep 300
+    bbwarn Slept
+}
