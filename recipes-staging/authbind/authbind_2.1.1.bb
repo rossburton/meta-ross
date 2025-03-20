@@ -3,7 +3,7 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://debian/copyright;md5=6f17ef7d0fe03b28a52f4375c7ae3d2e"
 SUMMARY = "Tool to allow non-root programs to bind() to low ports"
 
-SRC_URI = "git://git.chiark.greenend.org.uk/~ian/authbind.git;tag=debian/${PV} \
+SRC_URI = "git://git.chiark.greenend.org.uk/~ian/authbind.git;tag=debian/${PV};branch=master \
            file://makefile.patch"
 
 S = "${WORKDIR}/git"
